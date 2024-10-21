@@ -2,15 +2,15 @@
 
 作为官网给出的yarn application示例，这个示例很好讲述了如何撰写一个yarn分布式应用的客户端和Application Master，对于初学者很有学习意义，该应用在Hadoop官方代码仓中，位置如下：
 
-![](http://image.huawei.com/tiny-lts/v1/images/9c032697a232be339050638936e059f5_653x595.png)
+![](assets/1.png)
 
 该应用本身的作用是提交用户写的一条shell命令或者shell script到yarn集群，然后由application master申请资源执行。虽然功能不难，但是这个小应用的代码量也来到了几千行，写应用看得出来不是一个很简单调几个API的事。网上例子也比较少，找来找去还是这个例子最好。这篇文章从源码的角度，然后结合一些中间值的dump（序列化其实都是基于proto实现的），来梳理从提交到执行的全部过程。
 
 ## 执行
 
-首先你需要有这个distributed shell项目的jar包，如果是你下载了源码可以直接编译获得（不过需要一个有公司代理地址的mvn setting文件从而你可以从中心仓下载你编译需要的jar包，没有的找同事要一下），或者如果你直接下载的二进制文件，你可以直接在`hadoop/share/hadoop/yarn/hadoop-yarn-applications-distributedshell-3.1.3.jar`找到这个jar包
+首先你需要有这个distributed shell项目的jar包，如果是你下载了源码可以直接编译获得，或者如果你直接下载的二进制文件，你可以直接在`hadoop/share/hadoop/yarn/hadoop-yarn-applications-distributedshell-3.1.3.jar`找到这个jar包
 
-![image-20240912164223050](http://image.huawei.com/tiny-lts/v1/images/3e6fa2420cf2019961cb800119a5de45_414x902.png)
+![image-20240912164223050](assets/2.png)
 
 获得jar包后，执行如下命令：
 
@@ -67,7 +67,7 @@ List<QueueUserACLInfo> listAclInfo = yarnClient.getQueueAclsInfo();
 
 这些变量可以用debug简单看看内容：
 
-![image-20240912173102678](http://image.huawei.com/tiny-lts/v1/images/2f8fc94169dad0d2d360a43067ae7f16_1889x375.png)
+![image-20240912173102678](assets/3.png)
 
 **（2）资源配置和验证**
 
@@ -248,7 +248,7 @@ if (shellArgs.length > 0) {
 
 在我的这个使用例子中，AM物料的准备也比较简单，只包含了jar包和指令：
 
-![image-20240912191304049](http://image.huawei.com/tiny-lts/v1/images/5748ae9b01c5109db966f60777f687ab_2057x76.png)
+![image-20240912191304049](assets/4.png)
 
 其实说是传Local Resource，我们根据proto的具体内容可以发现其实本质是传递一些元数据或者一些较为简单的信息，大物料如jar本身都是直接放到HDFS去了，我们把resource的proto打开来看看：
 
@@ -328,7 +328,7 @@ env.put("CLASSPATH", classPathEnv.toString());
 
 环境变量的map如下图所示：
 
-![image-20240912194049786](C:\Users\z00830407\AppData\Roaming\Typora\typora-user-images\image-20240912194049786.png)
+![image-20240912194049786](assets/5.png)
 
 把classpath打开来看看，主要是配置hadoop一些关键的jar包地址：
 
